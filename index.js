@@ -1,10 +1,12 @@
 const express = require("express");
-const messageRouter = require("./message/router");
+const messageRouterFactory = require("./message/router");
 const bodyParser = require("body-parser");
 const Sse = require("json-sse");
 const Message = require("./message/model");
-const stream = new Sse();
 const bodyParserMiddleWare = bodyParser.json();
+const stream = new Sse();
+const messageRouter = messageRouterFactory(stream);
+
 const app = express();
 
 const port = 4000;
@@ -16,6 +18,7 @@ app.get("/", (req, res) => {
   stream.send("hi");
   res.send("hello");
 });
+
 app.get("/stream", async (req, res, next) => {
   try {
     const messages = await Message.findAll(); //array of messages
