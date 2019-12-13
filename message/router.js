@@ -17,8 +17,13 @@ function factory(stream) {
   router.post("/message", async (req, res, next) => {
     try {
       const message = await Message.create(req.body);
+      const action = {
+        type: "NEW_MESSAGE",
+        payload: message
+      };
 
-      const string = JSON.stringify(message);
+      const string = JSON.stringify(action);
+
       stream.send(string);
 
       res.send(message);
