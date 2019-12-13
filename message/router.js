@@ -10,4 +10,10 @@ router.get("/message", (req, res, next) => {
     .catch(error => next(error));
 });
 
+router.post("/message", (req, res, next) => {
+  Message.create(req.body)
+    .then(message => res.send(message))
+    .catch(error => next(error));
+});
+
 module.exports = router;
