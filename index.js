@@ -2,6 +2,7 @@ const express = require("express");
 const messageRouter = require("./message/router");
 const bodyParser = require("body-parser");
 const Sse = require("json-sse");
+const Message = require("./message/model");
 const stream = new Sse();
 const bodyParserMiddleWare = bodyParser.json();
 const app = express();
@@ -15,8 +16,15 @@ app.get("/", (req, res) => {
   stream.send("hi");
   res.send("hello");
 });
-app.get("/stream", (req, res, next) => {
-  stream.init(req, res);
+app.get("/stream", async (req, res, next) => {
+  try {
+    const messages = await Message.findAll(); //array of messages
+    const string = JSON.stringify(messages); //you need to turn it into json first
+    stream.updateInit(string); //gets data ready to send when connect
+    stream.init(req, res);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.listen(port, () => {
